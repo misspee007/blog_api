@@ -1,6 +1,7 @@
 # blog_api
 
 ## Question
+
 You are required to build a blogging api. The general idea here is that the api has a general endpoint that shows a list of articles that have been created by different people, and anybody that calls this endpoint, should be able to read a blog created by them or other users.
 
 ### Requirements
@@ -16,19 +17,21 @@ You are required to build a blogging api. The general idea here is that the api 
 9. The owner of the blog should be able to update the state of the blog to published
 10. The owner of a blog should be able to edit the blog in draft or published state
 11. The owner of the blog should be able to delete the blog in draft or published state
-12. The owner of the blog should be able to get a list of their blogs. 
+12. The owner of the blog should be able to get a list of their blogs.
 
-      a. The endpoint should be paginated
-      
-      b. It should be filterable by state
+    a. The endpoint should be paginated
+
+    b. It should be filterable by state
+
 13. Blogs created should have title, description, tags, author, timestamp, state, read_count, reading_time and body.
-14. The list of blogs endpoint that can be accessed by both logged in and not logged in users should be paginated, 
+14. The list of blogs endpoint that can be accessed by both logged in and not logged in users should be paginated,
 
-      a. default it to 20 blogs per page. 
+    a. default it to 20 blogs per page.
 
-      b. It should also be searchable by author, title and tags.
+    b. It should also be searchable by author, title and tags.
 
-      c. It should also be orderable by read_count, reading_time and timestamp
+    c. It should also be orderable by read_count, reading_time and timestamp
+
 15. When a single blog is requested, the api should return the user information(the author) with the blog. The read_count of the blog too should be updated by 1
 16. Come up with any algorithm for calculating the reading_time of the blog.
 17. Write tests for all endpoints
@@ -37,13 +40,13 @@ Note:
 The owner of the blog should be logged in to perform actions
 Use the MVC pattern
 
-
 ### Database
+
 Use MongoDB
 
 ### Data Models
 
-User 
+User
 
 - email is required and should be unique
 - first_name and last_name is required
@@ -62,8 +65,9 @@ Blog/Article
 - timestamp
 
 ### Submission
-- Push your code to GitHub 
-- Host it on heroku 
+
+- Push your code to GitHub
+- Host it on heroku
 - Share the heroku link and the GitHub link
 
 ### Helpful links
