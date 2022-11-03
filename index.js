@@ -1,6 +1,6 @@
 const app = require('./app');
 const PORT = process.env.PORT || 3000;
-const Database = require('./database');
+const Database = require('./src/database');
 
 Database.connect(process.env.MONGODB_CONNECTION_URL);
 
