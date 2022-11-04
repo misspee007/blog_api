@@ -1,4 +1,4 @@
-const { BlogModel } = require("../models");
+const { BlogModel, UserModel } = require("../models");
 
 // Get all published articles
 exports.getPublishedArticles = async (req, res, next) => {
@@ -43,6 +43,7 @@ exports.getPublishedArticles = async (req, res, next) => {
 
 		// get all published articles from the database
 		const articles = await BlogModel.find(findQuery)
+			.populate("author", "firstname lastname email")
 			.sort(sortQuery)
 			.skip(page)
 			.limit(per_page);

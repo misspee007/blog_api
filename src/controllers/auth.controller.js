@@ -1,3 +1,4 @@
+const passport = require("passport");
 const jwt = require("jsonwebtoken");
 const { UserModel } = require("../models");
 
@@ -5,11 +6,18 @@ exports.signup = async (req, res, next) => {
 	const { firstname, lastname, email, password } = req.body;
 
 	try {
-		const user = await UserModel.create({
-			firstname,
-			lastname,
-			email,
-			password,
+		const user = new UserModel({
+			firstname: firstname,
+			lastname: lastname,
+			email: email,
+			password: password,
+		});
+
+		user.save((err, user) => {
+			if (err) {
+				console.log(`err: ${err}`);
+				return next(err);
+			}
 		});
 
 		delete user.password;
@@ -23,20 +31,29 @@ exports.signup = async (req, res, next) => {
 	}
 };
 
-exports.login = (req, res, next, { err, user, info }) => {
-	if (!user) {
-		return next({ message: "email or password is incorrect" });
-	}
+exports.login = async (req, res, next) => {
+	passport.authenticate("login", async (err, user, info) => {
+		try {
+			if (err) {
+				return next(err);
+			}
+			if (!user) {
+				return next({ status: 401, message: "email or password is incorrect" });
+			}
 
-	req.login(user, { session: false }, async (error) => {
-		if (error) return next(error);
+			req.login(user, { session: false }, async (error) => {
+				if (error) return next(error);
 
-		const body = { _id: user._id, email: user.email };
+				const body = { _id: user._id, email: user.email };
 
-		const token = jwt.sign({ user: body }, process.env.JWT_SECRET, {
-			expiresIn: "1h",
-		});
+				const token = jwt.sign({ user: body }, process.env.JWT_SECRET, {
+					expiresIn: "1h",
+				});
 
-		return res.status(200).json({ token });
-	});
+				return res.status(200).json({ token });
+			});
+		} catch (error) {
+			return next(error);
+		}
+	})(req, res, next);
 };

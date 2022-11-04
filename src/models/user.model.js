@@ -1,22 +1,26 @@
 const mongoose = require("mongoose");
+const uniqueValidator = require('mongoose-unique-validator');
 const bcrypt = require("bcrypt");
 
 const { Schema } = mongoose;
-const ObjectId = Schema.ObjectId;
 
 const UserModel = new Schema({
-	id: ObjectId,
 	created_at: Date,
 	firstname: { type: String, required: true },
 	lastname: { type: String, required: true },
 	email: {
-    type: String,
-    required: true,
-    unique: [true, "User with this email already exists"],
-  },
+		type: String,
+		required: true,
+    unique: true,
+    index: true,
+	},
 	password: { type: String, required: true },
-  articles: [{ type: Schema.Types.ObjectId, ref: "Blog" }],
+	x: String,
+	articles: [{ type: Schema.Types.ObjectId, ref: "Blog" }],
 });
+
+// Apply the uniqueValidator plugin to the user model
+UserModel.plugin(uniqueValidator);
 
 UserModel.pre("save", async function (next) {
 	const user = this;

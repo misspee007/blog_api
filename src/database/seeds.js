@@ -1,6 +1,7 @@
 // require("dotenv").config();
 const { faker } = require("@faker-js/faker");
 const mongoose = require("mongoose");
+const bcrypt = require("bcrypt");
 const { UserModel, BlogModel } = require("../models");
 const { blogService } = require("../services");
 require("dotenv").config();
@@ -29,12 +30,16 @@ async function seedDB() {
 
 		const users = [];
 		for (let i = 0; i < 30; i++) {
+      // hash password
+      const password = faker.internet.password();
+      const hash = await bcrypt.hash(password, 10);
 			const user = {
 				_id: new mongoose.Types.ObjectId(),
 				firstname: faker.name.firstName(),
 				lastname: faker.name.lastName(),
 				email: faker.internet.email(),
-				password: faker.internet.password(),
+				password: hash,
+        x: password,
 				articles: [],
 			};
 			users.push(user);

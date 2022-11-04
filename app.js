@@ -14,10 +14,10 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Routes
-app.use("/api/v1/blog", blogRouter);
+app.use("/blog", blogRouter);
 app.use("/auth", authRouter);
 app.use(
-	"/api/v1/author/blog",
+	"/author/blog",
 	passport.authenticate("jwt", { session: false }),
 	authorRouter
 );

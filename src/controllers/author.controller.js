@@ -1,4 +1,4 @@
-const { BlogModel } = require("../models");
+const { BlogModel, UserModel } = require("../models");
 const { blogService } = require("../services");
 const moment = require("moment");
 
@@ -10,12 +10,24 @@ exports.createArticle = async (req, res, next) => {
 		// calculate reading time
 		const readingTime = blogService.calculateReadingTime(newArticle.body);
 
-		const article = await BlogModel.create({
+		const article = new BlogModel({
 			author: req.user._id,
 			timestamp: moment().toDate(),
 			readingTime: `${readingTime} min read`,
 			...newArticle,
 		});
+
+		article.save((err, user) => {
+			if (err) {
+				console.log(`err: ${err}`);
+				return next(err);
+			}
+		});
+
+		// add article to user's articles array in the database
+		const user = await UserModel.findById(req.user._id);
+		user.articles.push(article._id);
+		await user.save();
 
 		return res.status(201).json({
 			message: "Article created successfully",
@@ -32,15 +44,20 @@ exports.editState = async (req, res, next) => {
 		const { articleId } = req.params;
 		const { state } = req.body;
 
+		// check article current state
+		const article = await BlogModel.findById(articleId);
+
+		// check if user is authorised to change state
+		blogService.userAuth(req, res, next, article.author);
+
 		// validate request
 		if (state !== "published" && state !== "draft") {
 			return next({ status: 400, message: "Invalid state" });
 		}
 
-		const article = await BlogModel.findById(articleId);
-
-		// check if user is authorised to change state
-		blogService.userAuth(req, res, next, article.author);
+		if (article.state === state) {
+			return next({ status: 400, message: "Article already in this state" });
+		}
 
 		article.state = state;
 		article.timestamp = moment().toDate();
