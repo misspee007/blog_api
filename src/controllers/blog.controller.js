@@ -1,5 +1,4 @@
 const { BlogModel } = require("../models");
-const { blogService } = require("../services");
 
 // Get all published articles
 exports.getPublishedArticles = async (req, res, next) => {
@@ -13,14 +12,6 @@ exports.getPublishedArticles = async (req, res, next) => {
 			page = 1,
 			per_page = 20,
 		} = req.query;
-
-		// check if user is authorised to get articles
-		blogService.userAuth(req, res, next, authorId);
-
-		// check if state is valid
-		if (state !== "published" && state !== "draft") {
-			return next({ status: 400, message: "Invalid state" });
-		}
 
 		// filter
 		const findQuery = { state: "published" };

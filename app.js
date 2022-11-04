@@ -15,9 +15,9 @@ app.use(express.urlencoded({ extended: true }));
 
 // Routes
 app.use("/api/v1/blog", blogRouter);
-app.use("/api/v1/auth", authRouter);
+app.use("/auth", authRouter);
 app.use(
-	"/api/v1/author",
+	"/api/v1/author/blog",
 	passport.authenticate("jwt", { session: false }),
 	authorRouter
 );
