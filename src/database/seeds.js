@@ -19,36 +19,34 @@ mongoose
 
 async function seedDB() {
 	try {
-    // delete all users and blogs
-    const dbUsers = await UserModel.find({});
-    const userIds = dbUsers.map((user) => user._id);
+		// delete all users and blogs
+		const dbUsers = await UserModel.find({});
+		const userIds = dbUsers.map((user) => user._id);
 
-    await UserModel.deleteMany({_id: {$in: userIds}});
-    await BlogModel.deleteMany({author: {$in: userIds}});
+		await UserModel.deleteMany({ _id: { $in: userIds } });
+		await BlogModel.deleteMany({ author: { $in: userIds } });
 
-    console.log("Database cleared");
+		console.log("Database cleared");
 
 		const users = [];
-		for (let i = 0; i < 30; i++) {
-      // hash password
-      const password = faker.internet.password();
-      const hash = await bcrypt.hash(password, 10);
+		for (let i = 0; i < 22; i++) {
+      let p = faker.internet.password();
 			const user = {
 				_id: new mongoose.Types.ObjectId(),
 				firstname: faker.name.firstName(),
 				lastname: faker.name.lastName(),
 				email: faker.internet.email(),
-				password: hash,
-        x: password,
+				password: p,
+        x: p,
 				articles: [],
 			};
 			users.push(user);
 		}
 
 		const blogs = [];
-		for (let i = 0; i < 30; i++) {
-      const body = faker.lorem.paragraphs(20);
-      const readingTime = blogService.calculateReadingTime(body);
+		for (let i = 0; i < 22; i++) {
+			const body = faker.lorem.paragraphs(20);
+			const readingTime = blogService.calculateReadingTime(body);
 			blogs.push({
 				_id: new mongoose.Types.ObjectId(),
 				title: faker.lorem.sentence(),
@@ -64,12 +62,21 @@ async function seedDB() {
 		}
 
 		// add blogs to users
-    for (let i = 0; i < 30; i++) {
-      users[i].articles[0] = blogs[i]._id;
-    }
+		for (let i = 0; i < 22; i++) {
+			users[i].articles[0] = blogs[i]._id;
+		}
 
-		await UserModel.insertMany(users);
-		await BlogModel.insertMany(blogs);
+		// create and save each user
+		for (let i = 0; i < 22; i++) {
+			const user = new UserModel(users[i]);
+			await user.save();
+		}
+
+		// create and save each blog
+		for (let i = 0; i < 22; i++) {
+			const blog = new BlogModel(blogs[i]);
+			await blog.save();
+		}
 
 		console.log("Seeded DB!");
 	} catch (error) {

@@ -1,6 +1,9 @@
 exports.userAuth = (req, res, next, authorId) => {
 	// if author is not the same as the logged in user, throw error
-	if (authorId !== req.user._id.toString()) {
+	if (authorId !== req.user._id) {
+    console.log(typeof authorId, typeof req.user._id);
+    console.log("authorId", authorId);
+    console.log("req.user._id", req.user._id);
 		return next({
 			status: 401,
 			message: "You are not authorized to access this resource",

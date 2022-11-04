@@ -13,6 +13,10 @@ authRouter.post(
 );
 
 // login
-authRouter.post("/login", authController.login);
+authRouter.post("/login", async (req, res, next) =>
+	passport.authenticate("login", (err, user, info) => {
+		authController.login(req, res, { err, user, info });
+	})(req, res, next)
+);
 
 module.exports = authRouter;

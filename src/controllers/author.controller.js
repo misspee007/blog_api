@@ -77,17 +77,30 @@ exports.editState = async (req, res, next) => {
 exports.editArticle = async (req, res, next) => {
 	try {
 		const { articleId } = req.params;
-		const { title, body } = req.body;
+		const { title, body, tags, description } = req.body;
 
 		const article = await BlogModel.findById(articleId);
 
 		// check if user is authorised to edit article
 		blogService.userAuth(req, res, next, article.author);
 
-		article.title = title;
-		article.body = body;
-		article.timestamp = moment().toDate();
-		article.readingTime = blogService.calculateReadingTime(body);
+		// if params are provided, update them
+		if (title) {
+			article.title = title;
+		}
+		if (body) {
+			article.body = body;
+			article.readingTime = blogService.calculateReadingTime(body);
+		}
+		if (tags) {
+			article.tags = tags;
+		}
+    if (description) {
+      article.description = description;
+    }
+		if (title || body || tags || description) {
+			article.timestamp = moment().toDate();
+		}
 
 		await article.save();
 
@@ -123,7 +136,6 @@ exports.deleteArticle = async (req, res, next) => {
 // get all articles created by the user
 exports.getArticlesByAuthor = async (req, res, next) => {
 	try {
-		const { authorId } = req.params;
 		const {
 			state,
 			order = "asc",
@@ -132,22 +144,15 @@ exports.getArticlesByAuthor = async (req, res, next) => {
 			per_page = 20,
 		} = req.query;
 
-		// check if user is authorised to get articles
-		blogService.userAuth(req, res, next, authorId);
-
-		// check if state is valid
-		if (state !== "published" && state !== "draft") {
-			return next({ status: 400, message: "Invalid state" });
-		}
-
-		// filter by state
 		const findQuery = {};
 
+		// check if state is valid and if it is, add it to the query
 		if (state) {
-			findQuery.state = state;
-		}
-		if (authorId) {
-			findQuery.authorId = authorId;
+			if (state !== "published" && state !== "draft") {
+				return next({ status: 400, message: "Invalid state" });
+			} else {
+				findQuery.state = state;
+			}
 		}
 
 		// sort
@@ -165,16 +170,20 @@ exports.getArticlesByAuthor = async (req, res, next) => {
 			}
 		}
 
-		// get all articles created by the user and filter by state
-		const articles = await BlogModel.findById(authorId)
-			.find(findQuery)
-			.sort(sortQuery)
-			.skip(page)
-			.limit(per_page);
+		// get user's articles
+		const user = await UserModel.findById(req.user._id).populate({
+			path: "articles",
+			match: findQuery,
+			options: {
+				sort: sortQuery,
+				limit: parseInt(per_page),
+				skip: (page - 1) * per_page,
+			},
+		});
 
 		return res.status(200).json({
 			message: "Request successful",
-			articles: articles,
+			articles: user.articles,
 		});
 	} catch (error) {
 		return next(error);
