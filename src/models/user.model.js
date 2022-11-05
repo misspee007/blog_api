@@ -5,7 +5,6 @@ const bcrypt = require("bcrypt");
 const { Schema } = mongoose;
 
 const UserModel = new Schema({
-	created_at: Date,
 	firstname: { type: String, required: true },
 	lastname: { type: String, required: true },
 	email: {
@@ -17,7 +16,6 @@ const UserModel = new Schema({
   // password should allow up to 255 characters
 
 	password: { type: String, required: true },
-	x: String,
 	articles: [{ type: Schema.Types.ObjectId, ref: "Blog" }],
 });
 

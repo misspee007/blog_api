@@ -1,4 +1,3 @@
-const passport = require("passport");
 const jwt = require("jsonwebtoken");
 const { UserModel } = require("../models");
 
@@ -44,6 +43,6 @@ exports.login = (req, res, { err, user, info }) => {
 			expiresIn: "1h",
 		});
 
-		return res.status(200).json({ token });
+		return res.status(200).json({ message: "Login successful", token: token });
 	});
 };
