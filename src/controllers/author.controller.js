@@ -10,10 +10,15 @@ exports.createArticle = async (req, res, next) => {
 		// calculate reading time
 		const readingTime = blogService.calculateReadingTime(newArticle.body);
 
+    // if tags are provided, split them into an array
+    if (newArticle.tags) {
+      newArticle.tags = newArticle.tags.split(",");
+    }
+
 		const article = new BlogModel({
 			author: req.user._id,
 			timestamp: moment().toDate(),
-			readingTime: `${readingTime} min read`,
+			readingTime: readingTime,
 			...newArticle,
 		});
 
