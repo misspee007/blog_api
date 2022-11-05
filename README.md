@@ -1,11 +1,9 @@
-# blog_api
+# Blog API
+This is an api for a blogging app
 
-## Question
+---
 
-You are required to build a blogging api. The general idea here is that the api has a general endpoint that shows a list of articles that have been created by different people, and anybody that calls this endpoint, should be able to read a blog created by them or other users.
-
-### Requirements
-
+## Requirements
 1. Users should have a first_name, last_name, email, password, (you can add other attributes you want to store about the user)
 2. A user should be able to sign up and sign in into the blog app
 3. Use JWT as authentication strategy and expire the token after 1 hour
@@ -40,37 +38,388 @@ Note:
 The owner of the blog should be logged in to perform actions
 Use the MVC pattern
 
-### Database
+---
+## Setup
+- Install NodeJS, mongodb
+- pull this repo
+- update env with example.env
+- run `npm run start:dev`
+- run `npm run test` to test
 
-Use MongoDB
+---
+## Base URL
+- https://pda-blog-api.cyclic.app
 
-### Data Models
 
-User
+## Models
+---
 
-- email is required and should be unique
-- first_name and last_name is required
-- password
+### User
+| field  |  data_type | constraints  |
+|---|---|---|
+|  firstname | string  |  required|
+|  lastname  |  string |  required  |
+|  email     | string  |  required, unique, index |
+|  password |   string |  required  |
+|  articles |  array of ObjectIds |  |
 
-Blog/Article
 
-- title is required and unique
-- description
-- author
-- state
-- read_count
-- reading_time
-- tags
-- body is required
-- timestamp
+### Blog
+| field  |  data_type | constraints  |
+|---|---|---|
+|  title |  string |  required, unique, index |
+|  description |  string |   |
+|  tags | array of strings |   |
+|  author | ObjectId |  |
+|  timestamp |  date |  |
+|  state | string |  required, enum: ['draft', 'published'], default:'draft'|
+|  readCount |  number, default:0 |    |
+|  readingTime | string |  |
+|  body | string |  required  |
 
-### Submission
 
-- Push your code to GitHub
-- Host it on heroku
-- Share the heroku link and the GitHub link
 
-### Helpful links
+## APIs
+---
 
-- [Express](https://expressjs.com/)
-- [MongoDB](https://www.mongodb.com/)
+### Signup User
+
+- Route: /auth/signup
+- Method: POST
+- Body: 
+```
+{
+  "email": "doe@example.com",
+  "password": "Password1",
+  "firstname": "jon",
+  "lastname": "doe",
+}
+```
+
+- Responses
+
+Success
+```
+{
+    "message": "Signup successful",
+    "user": {
+        "firstname": "jon",
+        "lastname": "doe",
+        "email": "doe@example.com",
+    }
+}
+```
+---
+### Login User
+
+- Route: /auth/login
+- Method: POST
+- Body: 
+```
+{
+  "email": "doe@example.com",
+  "password": "Password1",
+}
+```
+
+- Responses
+
+Success
+```
+{
+    "message": "Login successful",
+    "token": "sjlkafjkldsfjsdntehwkljyroyjohtenmntiw"
+}
+```
+
+---
+### Create Article
+
+- Route: /author/blog
+- Method: POST
+- Header
+    - Authorization: Bearer {token}
+- Body: 
+```
+{
+    "title": "testing the routes",
+    "body": "This is the body of the article",
+    "description": "An article",
+    "tags": "blog,test"
+}
+```
+
+- Responses
+
+Success
+```
+{
+    "message": "Article created successfully",
+    "article": {
+        "title": "testing the routes",
+        "description": "An article",
+        "tags": [
+            "blog",
+            "test"
+        ],
+        "author": "6366b10174282b915e1be028",
+        "timestamp": "2022-11-05T20:52:40.573Z",
+        "state": "draft",
+        "readCount": 0,
+        "readingTime": "1 min",
+        "body": "This is the body of the article",
+        "_id": "6366cd18b34b65410bc391db"
+    }
+}
+```
+---
+### Change Article State
+
+- Route: author/blog/edit/state/:id
+- Method: PATCH
+- Header
+    - Authorization: Bearer {token}
+- Body: 
+```
+{
+    "state": "published"
+}
+```
+- Responses
+
+Success
+```
+{
+    "message": "State successfully updated",
+    "article": {
+        "_id": "6366cd18b34b65410bc391db",
+        "title": "testing the routes",
+        "description": "An article",
+        "tags": [
+            "blog",
+            "test"
+        ],
+        "author": "6366b10174282b915e1be028",
+        "timestamp": "2022-11-05T21:17:16.965Z",
+        "state": "published",
+        "readCount": 0,
+        "readingTime": "1 min",
+        "body": "This is the body of the article",
+        "__v": 0
+    }
+}
+```
+---
+
+### Edit Article 
+
+- Route: author/blog/edit/:id
+- Method: PATCH
+- Header
+    - Authorization: Bearer {token}
+- Body: 
+```
+{
+    "title": "We Are Still Testing The Routes",
+    "body": "This is the body of the article. I hope you enjoyed reading it.",
+    "description": "An updated article",
+    "tags": "blog,test,edit"
+}
+```
+- Responses
+
+Success
+```
+{
+    "message": "Article successfully edited and saved",
+    "article": {
+        "_id": "6366cd18b34b65410bc391db",
+        "title": "We Are Still Testing The Routes",
+        "description": "An updated article",
+        "tags": [
+            "blog",
+            "test",
+            "edit"
+        ],
+        "author": "6366b10174282b915e1be028",
+        "timestamp": "2022-11-05T21:27:22.516Z",
+        "state": "published",
+        "readCount": 0,
+        "readingTime": "1 min",
+        "body": "This is the body of the article. I hope you enjoyed reading it.",
+        "__v": 0
+    }
+}
+```
+---
+
+### Delete Article 
+
+- Route: author/blog/delete/:id
+- Method: DELETE
+- Header
+    - Authorization: Bearer {token}
+- Responses
+
+Success
+```
+{
+    "message": "Article successfully deleted"
+}
+```
+---
+
+### Get All Articles By An Author
+
+- Route: /author/blog
+- Method: GET
+- Header:
+    - Authorization: Bearer {token}
+- Query params: 
+    - page (default: 1)
+    - per_page (default: 20)
+    - order_by (default: timestamp)
+    - order (options: asc | desc, default: asc)
+    - state
+- Responses
+
+Success
+```
+{
+    "message": "Request successful",
+    "articles": [
+        {
+            "_id": "6366b10174282b915e1be03e",
+            "title": "An Article",
+            "description": "just another article",
+            "tags": [
+                "test",
+                "new"
+            ],
+            "author": "6366b10174282b915e1be028",
+            "timestamp": "2022-11-05T20:48:51.881Z",
+            "state": "published",
+            "readCount": 83,
+            "readingTime": "1 min",
+            "body": "WORK IJN",
+            "__v": 2
+        },
+        {
+            "_id": "6366cd18b34b65410bc391db",
+            "title": "We Are Still Testing The Routes",
+            "description": "An updated article",
+            "tags": [
+                "blog",
+                "test",
+                "edit"
+            ],
+            "author": "6366b10174282b915e1be028",
+            "timestamp": "2022-11-05T21:27:22.516Z",
+            "state": "published",
+            "readCount": 0,
+            "readingTime": "1 min",
+            "body": "This is the body of the article. I hope you enjoyed reading it.",
+            "__v": 1
+        }
+    ]
+}
+```
+---
+
+### Get All Published Articles
+
+- Route: /blog
+- Method: GET
+- Query params: 
+    - page (default: 1)
+    - per_page (default: 20)
+    - order_by (options: timestamp | reading_time | read_count, default: timestamp,reading_time,read_count)
+    - order (options: asc | desc, default: asc)
+    - author,
+    - title,
+    - tag
+- Responses
+
+Success
+```
+{
+    "message": "Request successful",
+    "articles": [
+        {
+            "_id": "6366b10174282b915e1be03e",
+            "title": "An Article",
+            "description": "just another article",
+            "tags": [
+                "test",
+                "new"
+            ],
+            "author": "6366b10174282b915e1be028",
+            "timestamp": "2022-11-05T20:48:51.881Z",
+            "state": "published",
+            "readCount": 83,
+            "readingTime": "1 min",
+            "body": "WORK IJN",
+            "__v": 2
+        },
+        {
+            "_id": "6366cd18b34b65410bc391db",
+            "title": "We Are Still Testing The Routes",
+            "description": "An updated article",
+            "tags": [
+                "blog",
+                "test",
+                "edit"
+            ],
+            "author": "6366b10174282b915e1be028",
+            "timestamp": "2022-11-05T21:27:22.516Z",
+            "state": "published",
+            "readCount": 0,
+            "readingTime": "1 min",
+            "body": "This is the body of the article. I hope you enjoyed reading it.",
+            "__v": 1
+        }
+    ]
+}
+```
+---
+
+### Get All Published Articles
+
+- Route: /blog
+- Method: GET
+- Responses
+
+Success
+```
+{
+    "message": "Request successful",
+    "article": {
+        "_id": "6366cd18b34b65410bc391db",
+        "title": "We Are Still Testing The Routes",
+        "description": "An updated article",
+        "tags": [
+            "blog",
+            "test",
+            "edit"
+        ],
+        "author": {
+            "_id": "6366b10174282b915e1be028",
+            "firstname": "Clark",
+            "lastname": "Boyer",
+            "email": "Cleo27@hotmail.com"
+        },
+        "timestamp": "2022-11-05T21:27:22.516Z",
+        "state": "published",
+        "readCount": 1,
+        "readingTime": "1 min",
+        "body": "This is the body of the article. I hope you enjoyed reading it.",
+        "__v": 1
+    }
+}
+```
+
+...
+
+## Contributor
+- Precious Abubakar
+----------------
