@@ -7,13 +7,13 @@ const authorRouter = express.Router();
 authorRouter.post("/", authorController.createArticle);
 
 // change state
-authorRouter.patch("/:articleId/state", authorController.editState);
+authorRouter.patch("/edit/state/:articleId", authorController.editState);
 
 // edit article
-authorRouter.patch("/:articleId", authorController.editArticle);
+authorRouter.patch("/edit/:articleId", authorController.editArticle);
 
 // delete article
-authorRouter.delete("/:articleId", authorController.deleteArticle);
+authorRouter.delete("/delete/:articleId", authorController.deleteArticle);
 
 // get all articles created by the author
 authorRouter.get("/", authorController.getArticlesByAuthor);

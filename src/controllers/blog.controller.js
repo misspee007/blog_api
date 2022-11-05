@@ -6,7 +6,7 @@ exports.getPublishedArticles = async (req, res, next) => {
 		const {
 			author,
 			title,
-			tag,
+			searchTag,
 			order = "asc",
 			order_by = "timestamp,reading_time,read_count",
 			page = 1,
@@ -22,9 +22,10 @@ exports.getPublishedArticles = async (req, res, next) => {
 		if (title) {
 			findQuery.title = title;
 		}
-		if (tag) {
-			findQuery.tag = tag;
-		}
+    // find articles with tags that match the search tags
+    if (searchTag) {
+      findQuery.tags = searchTag;
+    }
 
 		// sort
 		const sortQuery = {};

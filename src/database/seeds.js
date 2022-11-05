@@ -32,7 +32,7 @@ async function seedDB() {
 		for (let i = 0; i < 22; i++) {
       let p = faker.internet.password();
 			const user = {
-				_id: new mongoose.Types.ObjectId(),
+				// _id: new mongoose.Types.ObjectId(),
 				firstname: faker.name.firstName(),
 				lastname: faker.name.lastName(),
 				email: faker.internet.email(),
@@ -48,7 +48,7 @@ async function seedDB() {
 			const body = faker.lorem.paragraphs(20);
 			const readingTime = blogService.calculateReadingTime(body);
 			blogs.push({
-				_id: new mongoose.Types.ObjectId(),
+				// _id: new mongoose.Types.ObjectId(),
 				title: faker.lorem.sentence(),
 				description: faker.lorem.paragraph(),
 				tags: faker.lorem.words(3).split(" "),
