@@ -269,7 +269,7 @@ Success
 ```
 ---
 
-### Get All Articles By An Author
+### Get All Articles Created By The Logged In User
 
 - Route: /author/blog
 - Method: GET
@@ -383,9 +383,9 @@ Success
 ```
 ---
 
-### Get All Published Articles
+### Get Article
 
-- Route: /blog
+- Route: /blog/:id
 - Method: GET
 - Responses
 
