@@ -15,10 +15,11 @@ exports.getPublishedArticles = async (req, res, next) => {
 
 		// filter
 		const findQuery = { state: "published" };
+    // write query to find articles by author where article.author is equal to author
+    if(author) {
+      findQuery.author = author;
+    }
 
-		if (author) {
-			findQuery.author = author;
-		}
 		if (title) {
 			findQuery.title = title;
 		}

@@ -45,7 +45,10 @@ exports.editState = async (req, res, next) => {
 		const { state } = req.body;
 
 		// check article current state
-		const article = await BlogModel.findById(articleId).populate("author", "email");
+		const article = await BlogModel.findById(articleId).populate(
+			"author",
+			"email"
+		);
 
 		// check if user is authorised to change state
 		blogService.userAuth(req, res, next, article.author.email);
@@ -79,9 +82,12 @@ exports.editArticle = async (req, res, next) => {
 		const { articleId } = req.params;
 		const { title, body, tags, description } = req.body;
 
-    // check if user is authorised to edit article
-    const article = await BlogModel.findById(articleId);
-    blogService.userAuth(req, res, next, article.author._id);
+		// check if user is authorised to edit article
+		const article = await BlogModel.findById(articleId).populate(
+			"author",
+			"email"
+		);
+		blogService.userAuth(req, res, next, article.author.email);
 
 		// if params are provided, update them
 		if (title) {
@@ -94,9 +100,9 @@ exports.editArticle = async (req, res, next) => {
 		if (tags) {
 			article.tags = tags;
 		}
-    if (description) {
-      article.description = description;
-    }
+		if (description) {
+			article.description = description;
+		}
 		if (title || body || tags || description) {
 			article.timestamp = moment().toDate();
 		}
@@ -138,7 +144,7 @@ exports.getArticlesByAuthor = async (req, res, next) => {
 		const {
 			state,
 			order = "asc",
-			order_by = "created_at",
+			order_by = "timestamp",
 			page = 1,
 			per_page = 20,
 		} = req.query;
@@ -155,19 +161,13 @@ exports.getArticlesByAuthor = async (req, res, next) => {
 		}
 
 		// sort
-		const sortQuery = {};
+    const sortQuery = {};
 
-		const sortAttributes = order_by.split(",");
-
-		for (const attribute of sortAttributes) {
-			if (order === "asc") {
-				sortQuery[attribute] = 1;
-			}
-
-			if (order === "desc" && order_by) {
-				sortQuery[attribute] = -1;
-			}
-		}
+		if (order !== "asc" && order !== "desc") {
+			return next({ status: 400, message: "Invalid parameter order" });
+		} else {
+      sortQuery[order_by] = order;
+    }
 
 		// get user's articles
 		const user = await UserModel.findById(req.user._id).populate({

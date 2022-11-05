@@ -33,6 +33,7 @@ exports.signup = async (req, res, next) => {
 
 exports.login = (req, res, { err, user, info }) => {
 	if (!user) {
+    console.log("FROM LOGIN: ", `err: ${err}, user: ${user}, info: ${info}`);
 		return res.status(401).json({ message: "email or password is incorrect" });
 	}
 
@@ -47,32 +48,4 @@ exports.login = (req, res, { err, user, info }) => {
 
 		return res.status(200).json({ token });
 	});
-};
-
-exports.login2 = async (req, res, next) => {
-	passport.authenticate("login", async (err, user, info) => {
-		try {
-			if (err) {
-				return next(err);
-			}
-			console.log(`user: ${user}`);
-			if (!user) {
-				return next({ status: 401, message: "email or password is incorrect" });
-			}
-
-			req.login(user, { session: false }, async (error) => {
-				if (error) return next(error);
-
-				const body = { _id: user._id, email: user.email };
-
-				const token = jwt.sign({ user: body }, process.env.JWT_SECRET, {
-					expiresIn: "1h",
-				});
-
-				return res.status(200).json({ token });
-			});
-		} catch (error) {
-			return next(error);
-		}
-	})(req, res, next);
 };

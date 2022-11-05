@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const uniqueValidator = require('mongoose-unique-validator');
+const uniqueValidator = require("mongoose-unique-validator");
 const bcrypt = require("bcrypt");
 
 const { Schema } = mongoose;
@@ -11,9 +11,11 @@ const UserModel = new Schema({
 	email: {
 		type: String,
 		required: true,
-    unique: true,
-    index: true,
+		unique: true,
+		index: true,
 	},
+  // password should allow up to 255 characters
+
 	password: { type: String, required: true },
 	x: String,
 	articles: [{ type: Schema.Types.ObjectId, ref: "Blog" }],
@@ -24,18 +26,22 @@ UserModel.plugin(uniqueValidator);
 
 UserModel.pre("save", async function (next) {
 	const user = this;
-	const hash = await bcrypt.hash(this.password, 10);
 
-	this.password = hash;
-	next();
+	if (user.isModified("password") || user.isNew) {
+		const hash = await bcrypt.hash(this.password, 10);
+
+		this.password = hash;
+	} else {
+		return next();
+	}
 });
 
 UserModel.methods.isValidPassword = async function (password) {
 	const user = this;
 
-	const compare = await bcrypt.compare(password, user.password);
+	const match = await bcrypt.compare(password, user.password);
 
-	return compare;
+	return match;
 };
 
 const User = mongoose.model("Users", UserModel);
