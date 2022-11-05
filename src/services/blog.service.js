@@ -1,13 +1,11 @@
 exports.userAuth = (req, res, next, authorId) => {
 	// if author is not the same as the logged in user, throw error
-	if (req.user.email !== authorId) {
+	if (req.user._id !== authorId.toString()) {
 		return next({
 			status: 401,
 			message: "You are not authorized to access this resource",
 		});
 	}
-
-  next();
 };
 
 exports.calculateReadingTime = (text) => {

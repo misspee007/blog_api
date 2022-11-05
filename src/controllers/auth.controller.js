@@ -15,7 +15,6 @@ exports.signup = async (req, res, next) => {
 
 		user.save((err, user) => {
 			if (err) {
-				console.log(`err: ${err}`);
 				return next(err);
 			}
 		});
@@ -33,7 +32,6 @@ exports.signup = async (req, res, next) => {
 
 exports.login = (req, res, { err, user, info }) => {
 	if (!user) {
-    console.log("FROM LOGIN: ", `err: ${err}, user: ${user}, info: ${info}`);
 		return res.status(401).json({ message: "email or password is incorrect" });
 	}
 

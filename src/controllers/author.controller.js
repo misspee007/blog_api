@@ -45,13 +45,10 @@ exports.editState = async (req, res, next) => {
 		const { state } = req.body;
 
 		// check article current state
-		const article = await BlogModel.findById(articleId).populate(
-			"author",
-			"email"
-		);
+		const article = await BlogModel.findById(articleId);
 
 		// check if user is authorised to change state
-		blogService.userAuth(req, res, next, article.author.email);
+		blogService.userAuth(req, res, next, article.author._id);
 
 		// validate request
 		if (state !== "published" && state !== "draft") {
@@ -65,9 +62,9 @@ exports.editState = async (req, res, next) => {
 		article.state = state;
 		article.timestamp = moment().toDate();
 
-		await article.save();
+		article.save();
 
-		return res.status(204).json({
+		return res.status(200).json({
 			message: "State successfully updated",
 			article: article,
 		});
@@ -83,11 +80,8 @@ exports.editArticle = async (req, res, next) => {
 		const { title, body, tags, description } = req.body;
 
 		// check if user is authorised to edit article
-		const article = await BlogModel.findById(articleId).populate(
-			"author",
-			"email"
-		);
-		blogService.userAuth(req, res, next, article.author.email);
+		const article = await BlogModel.findById(articleId);
+		blogService.userAuth(req, res, next, article.author._id);
 
 		// if params are provided, update them
 		if (title) {
@@ -98,7 +92,7 @@ exports.editArticle = async (req, res, next) => {
 			article.readingTime = blogService.calculateReadingTime(body);
 		}
 		if (tags) {
-			article.tags = tags;
+			article.tags = tags.split(",");
 		}
 		if (description) {
 			article.description = description;
@@ -107,9 +101,9 @@ exports.editArticle = async (req, res, next) => {
 			article.timestamp = moment().toDate();
 		}
 
-		await article.save();
+		article.save();
 
-		return res.status(204).json({
+		return res.status(200).json({
 			message: "Article successfully edited and saved",
 			article: article,
 		});
@@ -128,9 +122,9 @@ exports.deleteArticle = async (req, res, next) => {
 		// check if user is authorised to delete article
 		blogService.userAuth(req, res, next, article.author._id);
 
-		await article.remove();
+		article.remove();
 
-		return res.status(204).json({
+		return res.status(200).json({
 			message: "Article successfully deleted",
 		});
 	} catch (error) {
