@@ -36,6 +36,17 @@ UserModel.pre("save", async function (next) {
 	}
 });
 
+// call pre hook on insertMany for seeder
+UserModel.pre("insertMany", async function (next, docs) {
+  if (Array.isArray(docs) && docs.length) {
+    for (let i = 0; i < docs.length; i++) {
+      const doc = docs[i];
+      const hash = await bcrypt.hash(doc.password, 10);
+      doc.password = hash;
+    }
+  }
+});
+
 UserModel.methods.isValidPassword = async function (password) {
 	const user = this;
 

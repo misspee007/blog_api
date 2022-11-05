@@ -8,7 +8,7 @@
     "start": "node index.js",
     "start:dev": "nodemon index.js",
     "test": "jest",
-    "seed": "node ./src/database/seeds.js"
+    "seed": "node ./src/database/seeder.js"
   },
   "keywords": [],
   "author": "Precious Abubakar",

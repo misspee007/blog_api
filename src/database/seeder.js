@@ -1,7 +1,6 @@
 // require("dotenv").config();
 const { faker } = require("@faker-js/faker");
 const mongoose = require("mongoose");
-const bcrypt = require("bcrypt");
 const { UserModel, BlogModel } = require("../models");
 const { blogService } = require("../services");
 require("dotenv").config();
@@ -21,7 +20,7 @@ async function seedDB() {
 	try {
 		// delete all users and blogs
 		const dbUsers = await UserModel.find({});
-		const userIds = dbUsers.map((user) => user._id);
+		const userIds = dbUsers.map((user) => user._id.toString());
 
 		await UserModel.deleteMany({ _id: { $in: userIds } });
 		await BlogModel.deleteMany({ author: { $in: userIds } });
@@ -30,14 +29,12 @@ async function seedDB() {
 
 		const users = [];
 		for (let i = 0; i < 22; i++) {
-      let p = faker.internet.password();
 			const user = {
-				// _id: new mongoose.Types.ObjectId(),
+        _id: mongoose.Types.ObjectId(),
 				firstname: faker.name.firstName(),
 				lastname: faker.name.lastName(),
 				email: faker.internet.email(),
-				password: p,
-        x: p,
+				password: "fakepassword",
 				articles: [],
 			};
 			users.push(user);
@@ -48,7 +45,7 @@ async function seedDB() {
 			const body = faker.lorem.paragraphs(20);
 			const readingTime = blogService.calculateReadingTime(body);
 			blogs.push({
-				// _id: new mongoose.Types.ObjectId(),
+        _id: mongoose.Types.ObjectId(),
 				title: faker.lorem.sentence(),
 				description: faker.lorem.paragraph(),
 				tags: faker.lorem.words(3).split(" "),
@@ -66,17 +63,9 @@ async function seedDB() {
 			users[i].articles[0] = blogs[i]._id;
 		}
 
-		// create and save each user
-		for (let i = 0; i < 22; i++) {
-			const user = new UserModel(users[i]);
-			await user.save();
-		}
-
-		// create and save each blog
-		for (let i = 0; i < 22; i++) {
-			const blog = new BlogModel(blogs[i]);
-			await blog.save();
-		}
+    // save all users and blogs
+    await UserModel.insertMany(users);
+    await BlogModel.insertMany(blogs);
 
 		console.log("Seeded DB!");
 	} catch (error) {
