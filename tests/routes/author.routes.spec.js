@@ -7,7 +7,7 @@ const { blogService } = require("../../src/services");
 
 describe("GET /author/blog: Get Published Articles", () => {
 	let conn;
-	let userId;
+	let authorId;
 	let token;
 
 	beforeAll(async () => {
@@ -212,7 +212,7 @@ describe("POST /author/blog: Create New Article", () => {
 	});
 });
 
-describe("PATCH /author/blog/state/:id: Change Article State", () => {
+describe("PATCH /author/blog/edit/state/:id: Change Article State", () => {
 	let conn;
 	let userId;
 	let token;
@@ -279,7 +279,7 @@ describe("PATCH /author/blog/state/:id: Change Article State", () => {
 
 	it("should return 401 Unauthorized for a client that has no token", async () => {
 		const response = await request(app)
-			.patch(`/author/blog/state/${articleId}`)
+			.patch(`/author/blog/edit/state/${articleId}`)
 			.set("content-type", "application/json")
 			.send({
 				state: "published",
@@ -325,6 +325,237 @@ describe("PATCH /author/blog/state/:id: Change Article State", () => {
 			});
 
 		expect(response.status).toBe(400);
-		expect(response.body).toHaveProperty("error", "Article is already in published state");
+		expect(response.body).toHaveProperty(
+			"error",
+			"Article is already in published state"
+		);
+	});
+});
+
+describe("PATCH /author/blog/edit/:id: Edit Article", () => {
+	let conn;
+	let authorId;
+	let authorToken;
+	let randomUserToken;
+	let articleId;
+
+	beforeAll(async () => {
+		conn = await connect();
+
+		// Create a user and get the id
+		await UserModel.create({
+			email: "pda@mail.com",
+			password: "123456",
+			firstname: "precious",
+			lastname: "abubakar",
+		});
+		await UserModel.create({
+			email: "test@mail.com",
+			password: "123456",
+			firstname: "test",
+			lastname: "test",
+		});
+		const users = await UserModel.find({}).sort({ lastname: "asc" });
+		authorId = users[0]._id;
+
+		// login users and get tokens
+		const authorLoginResponse = await request(app)
+			.post("/auth/login")
+			.set("content-type", "application/json")
+			.send({
+				email: "pda@mail.com",
+				password: "123456",
+			});
+
+		const userLoginResponse = await request(app)
+			.post("/auth/login")
+			.set("content-type", "application/json")
+			.send({
+				email: "test@mail.com",
+				password: "123456",
+			});
+
+		authorToken = authorLoginResponse.body.token;
+		randomUserToken = userLoginResponse.body.token;
+
+		// create an article and get the id
+		const article = await BlogModel.create({
+			title: "This is an article by the logged in user",
+			body: "This is the body of the article",
+			description: "An article",
+			tags: "one,test",
+			author: authorId.toString(),
+		});
+		articleId = article._id;
+	});
+
+	afterAll(async () => {
+		await conn.cleanup();
+		await conn.disconnect();
+	});
+
+	it("should return the updated article", async () => {
+		const response = await request(app)
+			.patch(`/author/blog/edit/${articleId}`)
+			.set("content-type", "application/json")
+			.set("Authorization", `Bearer ${authorToken}`)
+			.send({
+				body: "I edited this article. I hope you enjoyed reading it.",
+			});
+
+		expect(response.status).toBe(200);
+		expect(response.body).toHaveProperty(
+			"message",
+			"Article successfully edited and saved"
+		);
+		expect(response.body).toHaveProperty("article");
+		expect(response.body.article.body).toBe(
+			"I edited this article. I hope you enjoyed reading it."
+		);
+	});
+
+	it("should return 401 Unauthorized for a client that has no token", async () => {
+		const response = await request(app)
+			.patch(`/author/blog/edit/${articleId}`)
+			.set("content-type", "application/json")
+			.send({
+				title: "I edited this article",
+			});
+
+		expect(response.status).toBe(401);
+		expect(response.text).toBe("Unauthorized");
+	});
+
+	it("should return 401 if the token does not belong to the author of the article", async () => {
+		const response = await request(app)
+			.patch(`/author/blog/edit/${articleId}`)
+			.set("content-type", "application/json")
+			.set("Authorization", `Bearer ${randomUserToken}`)
+			.send({
+				title: "I edited this article",
+			});
+
+		expect(response.status).toBe(401);
+		expect(response.body).toHaveProperty(
+			"error",
+			"You are not authorized to access this resource"
+		);
+	});
+
+	it("should return error if the articleId parameter is invalid", async () => {
+		const response = await request(app)
+			.patch("/author/blog/edit/123")
+			.set("content-type", "application/json")
+			.set("Authorization", `Bearer ${authorToken}`)
+			.send({
+				title: "I edited this article",
+			});
+
+		expect(response.status).toBe(500);
+	});
+});
+
+describe("DELETE /author/blog/delete/:id: Delete Article", () => {
+	let conn;
+	let authorId;
+	let authorToken;
+	let randomUserToken;
+	let articleId;
+
+	beforeAll(async () => {
+		conn = await connect();
+
+		// Create a user and get the id
+		await UserModel.create({
+			email: "pda@mail.com",
+			password: "123456",
+			firstname: "precious",
+			lastname: "abubakar",
+		});
+		await UserModel.create({
+			email: "test@mail.com",
+			password: "123456",
+			firstname: "test",
+			lastname: "test",
+		});
+		const users = await UserModel.find({}).sort({ lastname: "asc" });
+		authorId = users[0]._id;
+
+		// login users and get tokens
+		const authorLoginResponse = await request(app)
+			.post("/auth/login")
+			.set("content-type", "application/json")
+			.send({
+				email: "pda@mail.com",
+				password: "123456",
+			});
+
+		const userLoginResponse = await request(app)
+			.post("/auth/login")
+			.set("content-type", "application/json")
+			.send({
+				email: "test@mail.com",
+				password: "123456",
+			});
+
+		authorToken = authorLoginResponse.body.token;
+		randomUserToken = userLoginResponse.body.token;
+
+		// create an article and get the id
+		const article = await BlogModel.create({
+			title: "This is an article by the logged in user",
+			body: "This is the body of the article",
+			description: "An article",
+			tags: "one,test",
+			author: authorId,
+		});
+		articleId = article._id;
+	});
+
+	afterAll(async () => {
+		await conn.cleanup();
+		await conn.disconnect();
+	});
+
+	it("should return 401 Unauthorized for a client that has no token", async () => {
+		const response = await request(app)
+			.delete(`/author/blog/delete/${articleId}`)
+			.set("content-type", "application/json");
+
+		expect(response.status).toBe(401);
+		expect(response.text).toBe("Unauthorized");
+	});
+
+	it("should return 401 if the token does not belong to the author of the article", async () => {
+		const response = await request(app)
+			.delete(`/author/blog/delete/${articleId}`)
+			.set("content-type", "application/json")
+			.set("Authorization", `Bearer ${randomUserToken}`);
+
+		expect(response.status).toBe(401);
+		expect(response.body).toHaveProperty(
+			"error",
+			"You are not authorized to access this resource"
+		);
+	});
+
+	it("should return error if the articleId parameter is invalid", async () => {
+		const response = await request(app)
+			.delete("/author/blog/delete/123")
+			.set("content-type", "application/json")
+			.set("Authorization", `Bearer ${authorToken}`);
+
+		// check if response.status is greater than 300
+		expect(response.status).not.toBe(200);
+	});
+
+	it("should remove article from the database", async () => {
+		const response = await request(app)
+			.delete(`/author/blog/delete/${articleId}`)
+			.set("content-type", "application/json")
+			.set("Authorization", `Bearer ${authorToken}`);
+
+		const article = await BlogModel.findById(articleId);
+		expect(article).toBeNull();
 	});
 });

@@ -1,5 +1,5 @@
 const request = require("supertest");
-const app = require("../app");
+const app = require("../../app");
 
 describe("Home Route", () => {
 	it("Should return status true", async () => {
@@ -15,6 +15,6 @@ describe("Home Route", () => {
 			.get("/undefined")
 			.set("content-type", "application/json");
 		expect(response.status).toBe(404);
-		expect(response.body).toEqual({ message: "route not found" });
+		expect(response.body).toHaveProperty("message", "Route not found");
 	});
 });

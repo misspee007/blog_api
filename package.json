@@ -7,8 +7,7 @@
   "scripts": {
     "start": "node index.js",
     "start:dev": "nodemon index.js",
-    "test": "jest --detectOpenHandles",
-    "test:author": "jest ./tests/routes/author.routes.spec.js",
+    "test": "jest --detectOpenHandles --forceExit",
     "seed": "node ./src/database/seeder.js"
   },
   "keywords": [],
