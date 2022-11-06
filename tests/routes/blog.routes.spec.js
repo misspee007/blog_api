@@ -67,6 +67,10 @@ describe("Blog Route: Get Published Articles", () => {
 		expect(response.status).toBe(200);
 		expect(response.body).toHaveProperty("articles");
 		expect(response.body).toHaveProperty("message", "Request successful");
+		// check that only published articles are returned
+		expect(
+			response.body.articles.every((article) => article.state === "published")
+		).toBe(true);
 		// check that the articles have the correct properties
 		expect(response.body.articles[0]).toHaveProperty("title");
 		expect(response.body.articles[0]).toHaveProperty("body");
@@ -83,8 +87,8 @@ describe("Blog Route: Get Published Articles", () => {
 		// check that the tags are returned as an array
 		expect(Array.isArray(response.body.articles[0].tags)).toBe(true);
 		expect(response.body.articles[0].tags.length).toBe(2);
-    // check that the author is returned as an object
-    expect(typeof response.body.articles[0].author).toBe("object");
+		// check that the author is returned as an object
+		expect(typeof response.body.articles[0].author).toBe("object");
 	});
 });
 

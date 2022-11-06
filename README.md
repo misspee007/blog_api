@@ -175,7 +175,7 @@ Success
 ---
 ### Change Article State
 
-- Route: author/blog/edit/state/:id
+- Route: author/blog/edit/state/:articleId
 - Method: PATCH
 - Header
     - Authorization: Bearer {token}
@@ -213,7 +213,7 @@ Success
 
 ### Edit Article 
 
-- Route: author/blog/edit/:id
+- Route: author/blog/edit/:articleId
 - Method: PATCH
 - Header
     - Authorization: Bearer {token}
@@ -255,7 +255,7 @@ Success
 
 ### Delete Article 
 
-- Route: author/blog/delete/:id
+- Route: author/blog/delete/:articleId
 - Method: DELETE
 - Header
     - Authorization: Bearer {token}
@@ -385,7 +385,7 @@ Success
 
 ### Get Article
 
-- Route: /blog/:id
+- Route: /blog/:articleId
 - Method: GET
 - Responses
 

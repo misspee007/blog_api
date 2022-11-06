@@ -61,7 +61,7 @@ exports.editState = async (req, res, next) => {
 		}
 
 		if (article.state === state) {
-			return next({ status: 400, message: "Article already in this state" });
+			return next({ status: 400, message: `Article is already in ${state} state` });
 		}
 
 		article.state = state;
