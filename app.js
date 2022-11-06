@@ -26,6 +26,11 @@ app.get("/", (req, res) => {
 	return res.json({ status: true });
 });
 
+// 404 route
+app.use('*', (req, res) => {
+  return res.status(404).json({ message: 'route not found' })
+})
+
 // Error Handler
 app.use(function (err, req, res, next) {
 	console.log(err);

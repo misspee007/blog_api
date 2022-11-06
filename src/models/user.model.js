@@ -13,8 +13,6 @@ const UserModel = new Schema({
 		unique: true,
 		index: true,
 	},
-  // password should allow up to 255 characters
-
 	password: { type: String, required: true },
 	articles: [{ type: Schema.Types.ObjectId, ref: "Blog" }],
 });
