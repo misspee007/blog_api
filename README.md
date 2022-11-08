@@ -337,7 +337,7 @@ Success
     - order (options: asc | desc, default: asc)
     - author,
     - title,
-    - tag
+    - tags
 - Responses
 
 Success
