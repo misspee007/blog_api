@@ -65,7 +65,7 @@ Use the MVC pattern
 |  lastname  |  string |  required  |
 |  email     | string  |  required, unique, index |
 |  password |   string |  required  |
-|  articles |  ref - Users |  |
+|  articles |  ref - Blog |  |
 
 
 ### Blog
@@ -74,7 +74,7 @@ Use the MVC pattern
 |  title |  string |  required, unique, index |
 |  description |  string |   |
 |  tags | array |   |
-|  author | ref - Blog |  |
+|  author | ref - Users |  |
 |  timestamp |  date |  |
 |  state | string |  required, enum: ['draft', 'published'], default:'draft'|
 |  readCount |  number, default:0 |    |
