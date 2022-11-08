@@ -2,8 +2,11 @@
 This is an api for a blogging app
 
 ---
+<details>
+    <summary>
+     <h2>Requirements</h2>
+    </summary>
 
-## Requirements
 1. Users should have a first_name, last_name, email, password, (you can add other attributes you want to store about the user)
 2. A user should be able to sign up and sign in into the blog app
 3. Use JWT as authentication strategy and expire the token after 1 hour
@@ -33,6 +36,7 @@ This is an api for a blogging app
 15. When a single blog is requested, the api should return the user information(the author) with the blog. The read_count of the blog too should be updated by 1
 16. Come up with any algorithm for calculating the reading_time of the blog.
 17. Write tests for all endpoints
+</details>
 
 Note:
 The owner of the blog should be logged in to perform actions
@@ -61,7 +65,7 @@ Use the MVC pattern
 |  lastname  |  string |  required  |
 |  email     | string  |  required, unique, index |
 |  password |   string |  required  |
-|  articles |  array of ObjectIds |  |
+|  articles |  ref - Users |  |
 
 
 ### Blog
@@ -69,8 +73,8 @@ Use the MVC pattern
 |---|---|---|
 |  title |  string |  required, unique, index |
 |  description |  string |   |
-|  tags | array of strings |   |
-|  author | ObjectId |  |
+|  tags | array |   |
+|  author | ref - Blog |  |
 |  timestamp |  date |  |
 |  state | string |  required, enum: ['draft', 'published'], default:'draft'|
 |  readCount |  number, default:0 |    |
