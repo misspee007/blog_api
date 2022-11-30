@@ -1,6 +1,7 @@
 const express = require("express");
 const passport = require("passport");
-const rateLimit = require('express-rate-limit');
+const rateLimit = require("express-rate-limit");
+const helmet = require("helmet");
 const { blogRouter, authRouter, authorRouter } = require("./src/routes");
 
 require("dotenv").config();
@@ -12,13 +13,14 @@ const app = express();
 
 // Middleware
 const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000,
-  max: 100,
-  standardHeaders: true,
-  legacyHeaders: true,
-  message: "Too many requests, please try again after 15 minutes",
+	windowMs: 15 * 60 * 1000,
+	max: 100,
+	standardHeaders: true,
+	legacyHeaders: true,
+	message: "Too many requests, please try again after 15 minutes",
 });
 app.use(limiter);
+app.use(helmet());
 app.use(express.json());
 
 // Routes
@@ -35,9 +37,9 @@ app.get("/", (req, res) => {
 });
 
 // 404 route
-app.use('*', (req, res) => {
-  return res.status(404).json({ message: 'Route not found' })
-})
+app.use("*", (req, res) => {
+	return res.status(404).json({ message: "Route not found" });
+});
 
 // Error Handler
 app.use(function (err, req, res, next) {
