@@ -1,10 +1,11 @@
 const express = require("express");
 const { authorController } = require("../controllers");
+const { authorValidator } = require("../validators");
 
 const authorRouter = express.Router();
 
 // create a new article
-authorRouter.post("/", authorController.createArticle);
+authorRouter.post("/", authorValidator, authorController.createArticle);
 
 // change state
 authorRouter.patch("/edit/state/:articleId", authorController.editState);

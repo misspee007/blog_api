@@ -1,5 +1,6 @@
 const express = require("express");
 const passport = require("passport");
+const { userValidator } = require("../validators");
 
 const { authController } = require("../controllers");
 
@@ -8,7 +9,7 @@ const authRouter = express.Router();
 // signup
 authRouter.post(
 	"/signup",
-	passport.authenticate("signup", { session: false }),
+	passport.authenticate("signup", { session: false }), userValidator,
 	authController.signup
 );
 
