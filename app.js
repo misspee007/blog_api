@@ -1,5 +1,6 @@
 const express = require("express");
 const passport = require("passport");
+const rateLimit = require('express-rate-limit');
 const { blogRouter, authRouter, authorRouter } = require("./src/routes");
 
 require("dotenv").config();
@@ -10,8 +11,15 @@ require("./src/authentication/passport");
 const app = express();
 
 // Middleware
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 100,
+  standardHeaders: true,
+  legacyHeaders: true,
+  message: "Too many requests, please try again after 15 minutes",
+});
+app.use(limiter);
 app.use(express.json());
-// app.use(express.urlencoded({ extended: true }));
 
 // Routes
 app.use("/blog", blogRouter);
