@@ -17,7 +17,9 @@ const userValidator = Joi.object({
 		minDomainSegments: 2,
 		tlds: { allow: ["com", "net"] },
 	}),
-  password: Joi.string().pattern(new RegExp("^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.{8,})")).required(),
+	password: Joi.string()
+		.pattern(new RegExp("^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.{8,})"))
+		.required(),
 });
 
 module.exports = validateUserMiddleware;
