@@ -46,13 +46,13 @@ Use the MVC pattern
 ## Setup
 - Install NodeJS, mongodb
 - pull this repo
-- update env with example.env
+- update env with variables as required in the config
 - run `npm run start:dev`
 - run `npm run test` to test
 
 ---
 ## Base URL
-- https://pda-blog-api.cyclic.app
+- https://pda-blog.cyclic.app
 
 
 ## Models
@@ -88,7 +88,7 @@ Use the MVC pattern
 
 ### Signup User
 
-- Route: /auth/signup
+- Route: /api/v1/auth/signup
 - Method: POST
 - Body: 
 ```
@@ -116,7 +116,7 @@ Success
 ---
 ### Login User
 
-- Route: /auth/login
+- Route: /api/v1/auth/login
 - Method: POST
 - Body: 
 ```
@@ -139,7 +139,7 @@ Success
 ---
 ### Create Article
 
-- Route: /author/blog
+- Route: /api/v1/author/blog
 - Method: POST
 - Header
     - Authorization: Bearer {token}
@@ -179,7 +179,7 @@ Success
 ---
 ### Change Article State
 
-- Route: author/blog/edit/state/:articleId
+- Route: /api/v1/author/blog/edit/state/:articleId
 - Method: PATCH
 - Header
     - Authorization: Bearer {token}
@@ -217,7 +217,7 @@ Success
 
 ### Edit Article 
 
-- Route: author/blog/edit/:articleId
+- Route: /api/v1/author/blog/edit/:articleId
 - Method: PATCH
 - Header
     - Authorization: Bearer {token}
@@ -259,7 +259,7 @@ Success
 
 ### Delete Article 
 
-- Route: author/blog/delete/:articleId
+- Route: /api/v1/author/blog/delete/:articleId
 - Method: DELETE
 - Header
     - Authorization: Bearer {token}
@@ -275,7 +275,7 @@ Success
 
 ### Get All Articles Created By The Logged In User
 
-- Route: /author/blog
+- Route: /api/v1/author/blog
 - Method: GET
 - Header:
     - Authorization: Bearer {token}
@@ -332,7 +332,7 @@ Success
 
 ### Get All Published Articles
 
-- Route: /blog
+- Route: /api/v1/blog
 - Method: GET
 - Query params: 
     - page (default: 1)
@@ -389,7 +389,7 @@ Success
 
 ### Get Article
 
-- Route: /blog/:articleId
+- Route: /api/v1/blog/:articleId
 - Method: GET
 - Responses
 
