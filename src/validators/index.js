@@ -1,7 +1,11 @@
 const userValidator = require("./user.validator");
-const authorValidator = require("./author.validator");
+const {
+	newArticleValidationMW,
+	updateArticleValidationMW,
+} = require("./author.validator");
 
 module.exports = {
 	userValidator,
-	authorValidator,
+	newArticleValidationMW,
+	updateArticleValidationMW,
 };

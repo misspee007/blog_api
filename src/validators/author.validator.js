@@ -1,20 +1,40 @@
 const Joi = require("joi");
 
-const validateArticleMiddleware = async (req, res, next) => {
+const newArticleValidationSchema = Joi.object({
+	title: Joi.string().trim().required(),
+	body: Joi.string().trim().required(),
+	description: Joi.string().trim(),
+	tags: Joi.string().trim(),
+});
+
+const updateArticleValidationSchema = Joi.object({
+	title: Joi.string().trim(),
+	body: Joi.string().trim(),
+	description: Joi.string().trim(),
+	tags: Joi.string().trim(),
+});
+
+const newArticleValidationMW = async (req, res, next) => {
 	const article = req.body;
 	try {
-		await articleValidator.validateAsync(article);
+		await newArticleValidationSchema.validateAsync(article);
 		next();
 	} catch (error) {
 		return next({ status: 406, message: error.details[0].message });
 	}
 };
 
-const articleValidator = Joi.object({
-	title: Joi.string().required(),
-	body: Joi.string().required(),
-	description: Joi.string(),
-	tags: Joi.string(),
-});
+const updateArticleValidationMW = async (req, res, next) => {
+	const article = req.body;
+	try {
+		await updateArticleValidationSchema.validateAsync(article);
+		next();
+	} catch (error) {
+		return next({ status: 406, message: error.details[0].message });
+	}
+};
 
-module.exports = validateArticleMiddleware;
+module.exports = {
+	newArticleValidationMW,
+	updateArticleValidationMW,
+};
