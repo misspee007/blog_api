@@ -6,7 +6,7 @@ const rateLimit = require("express-rate-limit");
 const helmet = require("helmet");
 const { blogRouter, authRouter, authorRouter } = require("./src/routes");
 
-require("dotenv").config();
+const CONFIG = require("./src/config");
 
 // Signup and login authentication middleware
 require("./src/authentication/passport");
@@ -15,7 +15,7 @@ const app = express();
 
 // Middleware
 Sentry.init({
-	dsn: process.env.SENTRY_DSN,
+	dsn: CONFIG.SENTRY_DSN,
 	integrations: [
 		// enable HTTP calls tracing
 		new Sentry.Integrations.Http({ tracing: true }),
@@ -43,10 +43,10 @@ app.use(helmet());
 app.use(express.json());
 
 // Routes
-app.use("/blog", blogRouter);
-app.use("/auth", authRouter);
+app.use("/api/v1/blog", blogRouter);
+app.use("/api/v1/auth", authRouter);
 app.use(
-	"/author/blog",
+	"/api/v1/author/blog",
 	passport.authenticate("jwt", { session: false }),
 	authorRouter
 );
