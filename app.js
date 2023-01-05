@@ -66,7 +66,7 @@ app.use("*", (req, res) => {
 // Error Handler
 app.use(function (err, req, res, next) {
 	logger.error(err.message);
-	res.status(err.status || 500).send("Oops, something failed");
+	return res.status(err.status || 500).send("Oops, something failed");
 });
 
 module.exports = app;
