@@ -1,9 +1,10 @@
 const express = require("express");
-const Sentry = require("@sentry/node");
-const Tracing = require("@sentry/tracing");
+const { auth, requiresAuth } = require("express-openid-connect");
+const auth0Config = require("./src/authentication/auth0");
 const passport = require("passport");
 const rateLimit = require("express-rate-limit");
 const helmet = require("helmet");
+const { logger, httpLogger } = require("./src/loggers");
 const { blogRouter, authRouter, authorRouter } = require("./src/routes");
 
 const CONFIG = require("./src/config");
@@ -14,20 +15,9 @@ require("./src/authentication/passport");
 const app = express();
 
 // Middleware
-Sentry.init({
-	dsn: CONFIG.SENTRY_DSN,
-	integrations: [
-		// enable HTTP calls tracing
-		new Sentry.Integrations.Http({ tracing: true }),
-		// enable Express.js middleware tracing
-		new Tracing.Integrations.Express({ app }),
-	],
+app.use(httpLogger);
 
-	// Set tracesSampleRate to 1.0 to capture 100% of transactions for performance monitoring.
-	tracesSampleRate: 1.0,
-});
-app.use(Sentry.Handlers.requestHandler());
-app.use(Sentry.Handlers.tracingHandler());
+app.use(auth(auth0Config));
 
 const limiter = rateLimit({
 	windowMs: 15 * 60 * 1000,
@@ -55,18 +45,25 @@ app.get("/", (req, res) => {
 	return res.json({ status: true });
 });
 
+// req.oidc.isAuthenticated is provided from the auth router
+// app.get("/", (req, res) => {
+// 	res.send(req.oidc.isAuthenticated() ? "Logged in" : "Logged out");
+// });
+
+// The /profile route will show the user profile as JSON
+// app.get("/profile", requiresAuth(), (req, res) => {
+// 	res.send(JSON.stringify(req.oidc.user, null, 2));
+// });
+
 // 404 route
 app.use("*", (req, res) => {
 	return res.status(404).json({ message: "Route not found" });
 });
 
-// Sentry error handler
-app.use(Sentry.Handlers.errorHandler());
-
-// Fallthrough Error Handler
-app.use(function onError(err, req, res, next) {
-	// console.log(err);
-	return res.status(err.status || 500).end(res.sentry + "\n");
+// Error Handler
+app.use(function (err, req, res, next) {
+	logger.error(err.message);
+	res.status(err.status || 500).send("Oops, something failed");
 });
 
 module.exports = app;
