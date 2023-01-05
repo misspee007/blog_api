@@ -4,6 +4,7 @@ const auth0Config = require("./src/authentication/auth0");
 const passport = require("passport");
 const rateLimit = require("express-rate-limit");
 const helmet = require("helmet");
+const cors = require("cors");
 const { logger, httpLogger } = require("./src/loggers");
 const { blogRouter, authRouter, authorRouter } = require("./src/routes");
 
@@ -15,6 +16,8 @@ require("./src/authentication/passport");
 const app = express();
 
 // Middleware
+app.use(cors());
+
 app.use(httpLogger);
 
 app.use(auth(auth0Config));
