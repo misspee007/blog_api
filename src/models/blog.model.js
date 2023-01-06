@@ -9,6 +9,7 @@ const BlogSchema = new Schema({
 	tags: [String],
 	author: { type: Schema.Types.ObjectId, ref: "Users" },
 	timestamp: Date,
+  image: String,
 	state: { type: String, enum: ["draft", "published"], default: "draft" },
 	readCount: { type: Number, default: 0 },
 	readingTime: String,

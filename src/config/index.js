@@ -8,4 +8,5 @@ module.exports = {
   AUTH0_ISSUER_BASE_URL: process.env.AUTH0_ISSUER_BASE_URL,
   AUTH0_CLIENT_ID: process.env.AUTH0_CLIENT_ID,
   AUTH0_SECRET: process.env.AUTH0_SECRET,
+  CLOUDINARY_URL: process.env.CLOUDINARY_URL,
 };
