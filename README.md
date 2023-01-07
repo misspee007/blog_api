@@ -74,6 +74,7 @@ Use the MVC pattern
 |  title |  string |  required, unique, index |
 |  description |  string |   |
 |  tags | array |   |
+|  imageUrl | string |   |
 |  author | ref - Users |  |
 |  timestamp |  date |  |
 |  state | string |  required, enum: ['draft', 'published'], default:'draft'|
@@ -143,13 +144,14 @@ Success
 - Method: POST
 - Header
     - Authorization: Bearer {token}
-- Body: 
+- Body:
 ```
 {
     "title": "testing the routes",
     "body": "This is the body of the article",
     "description": "An article",
-    "tags": "blog,test"
+    "tags": "blog,test",
+    "file": {...}
 }
 ```
 
@@ -172,6 +174,7 @@ Success
         "readCount": 0,
         "readingTime": "1 min",
         "body": "This is the body of the article",
+        "imageUrl": "https://res.cloudinary.com/pda-blog/image/upload/v1673042099/tmp-1-1673042098007.jpg",
         "_id": "6366cd18b34b65410bc391db"
     }
 }
@@ -227,7 +230,8 @@ Success
     "title": "We Are Still Testing The Routes",
     "body": "This is the body of the article. I hope you enjoyed reading it.",
     "description": "An updated article",
-    "tags": "blog,test,edit"
+    "tags": "blog,test,edit",
+    "file": {...}
 }
 ```
 - Responses
@@ -251,6 +255,7 @@ Success
         "readCount": 0,
         "readingTime": "1 min",
         "body": "This is the body of the article. I hope you enjoyed reading it.",
+        "imageUrl": "https://res.cloudinary.com/pda-blog/image/upload/v1673042099/tmp-1-1673042098007.jpg",
         "__v": 0
     }
 }
