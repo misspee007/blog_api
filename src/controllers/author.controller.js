@@ -15,6 +15,12 @@ exports.createArticle = async (req, res, next) => {
       newArticle.tags = newArticle.tags.split(",");
     }
 
+    // upload cover image to cloudinary
+    if (req.files) {
+      const imageUrl = await blogService.uploadImage(req, res, next);
+      newArticle.imageUrl = imageUrl;
+    }
+
 		const article = new BlogModel({
 			author: req.user._id,
 			timestamp: moment().toDate(),
@@ -84,11 +90,18 @@ exports.editArticle = async (req, res, next) => {
 		const { articleId } = req.params;
 		const { title, body, tags, description } = req.body;
 
+
 		// check if user is authorised to edit article
 		const article = await BlogModel.findById(articleId);
 		blogService.userAuth(req, res, next, article.author._id);
 
 		// if params are provided, update them
+    // check if file is provided
+    if (req.files) {
+      const imageUrl = await blogService.uploadImage(req, res, next);
+      article.imageUrl = imageUrl;
+    }
+
 		if (title) {
 			article.title = title;
 		}
@@ -102,7 +115,8 @@ exports.editArticle = async (req, res, next) => {
 		if (description) {
 			article.description = description;
 		}
-		if (title || body || tags || description) {
+
+		if (title || body || tags || description ) {
 			article.timestamp = moment().toDate();
 		}
 
@@ -112,6 +126,7 @@ exports.editArticle = async (req, res, next) => {
 			message: "Article successfully edited and saved",
 			article: article,
 		});
+
 	} catch (error) {
 		return next(error);
 	}

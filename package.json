@@ -15,9 +15,11 @@
   "license": "ISC",
   "dependencies": {
     "bcrypt": "^5.1.0",
+    "cloudinary": "^1.33.0",
     "cors": "^2.8.5",
     "dotenv": "^16.0.3",
     "express": "^4.18.2",
+    "express-fileupload": "^1.4.0",
     "express-openid-connect": "^2.11.0",
     "express-rate-limit": "^6.7.0",
     "helmet": "^6.0.1",
