@@ -12,6 +12,7 @@ const updateArticleValidationSchema = Joi.object({
 	body: Joi.string().trim(),
 	description: Joi.string().trim(),
 	tags: Joi.string().trim(),
+	state: Joi.string().trim().valid("draft", "published"),
 });
 
 const newArticleValidationMW = async (req, res, next) => {
