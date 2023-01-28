@@ -60,9 +60,41 @@ module.exports = {
 					},
 				},
 			},
+			BlogInput: {
+				type: "object",
+				properties: {
+					title: {
+						type: "string",
+						required: true,
+						example: "My First Blog Post",
+					},
+					description: {
+						type: "string",
+						example: "This is my first blog post",
+					},
+					tags: {
+						type: "string",
+						example: "blog,first",
+					},
+					body: {
+						type: "string",
+						required: true,
+						example:
+							"This is the body of my first blog post. I am so excited to share this with you all! I hope you enjoy it.",
+					},
+					fileName: {
+						type: "string",
+						format: "binary",
+					},
+				},
+			},
 			User: {
 				type: "object",
 				properties: {
+          _id: {
+						type: "string",
+						example: "5f9f5c5b9c9d8c0b8c8b8b8b",
+					},
 					firstname: {
 						type: "string",
 						required: true,
@@ -94,6 +126,31 @@ module.exports = {
 					},
 				},
 			},
+			UserInput: {
+				type: "object",
+				properties: {
+					firstname: {
+						type: "string",
+						required: true,
+						example: "John",
+					},
+					lastname: {
+						type: "string",
+						required: true,
+						example: "Doe",
+					},
+					email: {
+						type: "string",
+						required: true,
+						example: "johndoe@mail.com",
+					},
+					password: {
+						type: "string",
+						required: true,
+            example: "password",
+					},
+				},
+			},
 			ErrBadRequest: {
 				type: "object",
 				properties: {
@@ -108,48 +165,55 @@ module.exports = {
 					},
 				},
 			},
-      ErrUnauthorized: {
-        type: "object",
-        properties: {
-          message: {
-            type: "string",
-            description: "invalid token or invalid credentials",
-            example: "You are not authorized to access this resource",
-          },
-          status: {
-            type: "number",
-            example: 401,
-          },
-        },
-      },
-      ErrServer: {
-        type: "object",
-        properties: {
-          message: {
-            type: "string",
-            description: "Error message",
-            example: "Internal Server Error",
-          },
-          status: {
-            type: "number",
-            example: 500,
-          },
-        },
-      },
-      ErrNotFound: {
-        type: "object",
-        properties: {
-          message: {
-            type: "string",
-            description: "Error message",
-            example: "Not Found",
-          },
-          status: {
-            type: "number",
-            example: 404,
-          },
-        },
-      },
+			ErrUnauthorized: {
+				type: "object",
+				properties: {
+					message: {
+						type: "string",
+						description: "invalid token or invalid credentials",
+						example: "You are not authorized to access this resource",
+					},
+					status: {
+						type: "number",
+						example: 401,
+					},
+				},
+			},
+			ErrServer: {
+				type: "object",
+				properties: {
+					message: {
+						type: "string",
+						description: "Error message",
+						example: "Internal Server Error",
+					},
+					status: {
+						type: "number",
+						example: 500,
+					},
+				},
+			},
+			ErrNotFound: {
+				type: "object",
+				properties: {
+					message: {
+						type: "string",
+						description: "Error message",
+						example: "Not Found",
+					},
+					status: {
+						type: "number",
+						example: 404,
+					},
+				},
+			},
+		},
+		securitySchemes: {
+			bearerAuth: {
+				type: "http",
+				scheme: "bearer",
+				bearerFormat: "JWT",
+			},
 		},
 	},
 };
