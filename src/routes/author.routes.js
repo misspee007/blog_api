@@ -18,7 +18,11 @@ authorRouter.patch(
 );
 
 // edit article
-authorRouter.patch("/edit/:articleId", authorController.editArticle);
+authorRouter.patch(
+	"/edit/:articleId",
+	updateArticleValidationMW,
+	authorController.editArticle
+);
 
 // delete article
 authorRouter.delete("/delete/:articleId", authorController.deleteArticle);

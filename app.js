@@ -1,14 +1,13 @@
 const express = require("express");
-const { auth, requiresAuth } = require("express-openid-connect");
-const auth0Config = require("./src/authentication/auth0");
 const passport = require("passport");
 const rateLimit = require("express-rate-limit");
 const helmet = require("helmet");
 const cors = require("cors");
+const fileUpload = require("express-fileupload");
 const { logger, httpLogger } = require("./src/loggers");
 const { blogRouter, authRouter, authorRouter } = require("./src/routes");
-
-const CONFIG = require("./src/config");
+const swaggerUi = require('swagger-ui-express');
+const docs = require('./docs');
 
 // Signup and login authentication middleware
 require("./src/authentication/passport");
@@ -19,8 +18,6 @@ const app = express();
 app.use(cors());
 
 app.use(httpLogger);
-
-app.use(auth(auth0Config));
 
 const limiter = rateLimit({
 	windowMs: 15 * 60 * 1000,
@@ -35,6 +32,14 @@ app.use(helmet());
 
 app.use(express.json());
 
+app.use(express.urlencoded({ extended: true }));
+
+app.use(fileUpload({
+  createParentPath: true,
+  useTempFiles: true,
+  tempFileDir: "/tmp/",
+}));
+
 // Routes
 app.use("/api/v1/blog", blogRouter);
 app.use("/api/v1/auth", authRouter);
@@ -43,20 +48,11 @@ app.use(
 	passport.authenticate("jwt", { session: false }),
 	authorRouter
 );
+app.use('/docs', swaggerUi.serve, swaggerUi.setup(docs));
 
 app.get("/", (req, res) => {
 	return res.json({ status: true });
 });
-
-// req.oidc.isAuthenticated is provided from the auth router
-// app.get("/", (req, res) => {
-// 	res.send(req.oidc.isAuthenticated() ? "Logged in" : "Logged out");
-// });
-
-// The /profile route will show the user profile as JSON
-// app.get("/profile", requiresAuth(), (req, res) => {
-// 	res.send(JSON.stringify(req.oidc.user, null, 2));
-// });
 
 // 404 route
 app.use("*", (req, res) => {
